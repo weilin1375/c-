@@ -1,0 +1,136 @@
+C++的标准模板库（简称STL）是一个容器和算法的类库。容器往往包含同一类型的数据。
+
+set是一种关联式容器，其特性如下：
+
+set以RBTree作为底层容器
+所得元素的只有key没有value，value就是key
+不允许出现键值重复
+所有的元素都会被自动排序
+不能通过迭代器来改变set的值，因为set的值就是键
+
+定义一个元素为整数的集合a，可以用
+set<int> a;
+基本操作：
+对集合a中元素的有
+插入元素：a.insert(1);
+删除元素（如果存在）：a.erase(1);
+判断元素是否属于集合：if (a.find(1) != a.end()) ...
+返回集合元素的个数：a.size()
+将集合清为空集：a.clear()
+中序遍历：类似vector遍历（用迭代器）
+
+反向遍历：利用反向迭代器reverse_iterator：
+
+　　　　set<int> s;  set<int>::reverse_iterator rit;  for(rit=s.rbegin();rit!=s.rend();rit++)
+
+元素的删除：s.erase(2);  s.clear();
+
+元素的检索：find(),若找到，返回该值迭代器的位置，否则返回最后一个元素后面一个位置s.end()
+
+           it=s.find(5); if(it==s.end()) cout<<"not find"<<endl;else cout<<*it<<endl;
+
+
+
+map：一样是关联式容器，它们的底层容器都是红黑树，区别就在于map的值不作为键，键和值是分开的。它的特性如下：
+
+map以RBTree作为底层容器
+所有元素都是键+值存在
+不允许键重复
+所有元素是通过键进行自动排序的
+map的键是不能修改的，但是其键对应的值是可以修改的
+在map中，一个键对应一个值，其中键不允许重复，不允许修改，但是键对应的值是可以修改的。
+
+
+
+ Map基本操作：
+
+              数据的插入：
+在构造map容器后，我们就可以往里面插入数据了。这里讲三种插入数据的方法：
+第一种：用insert函数插入pair数据
+           Map<int, string> mapStudent;
+            mapStudent.insert(pair<int, string>(1, “student_one”));
+第二种：用insert函数插入value_type数据
+           Map<int, string> mapStudent;
+           mapStudent.insert(map<int, string>::value_type (1, “student_one”));
+第三种：用数组方式插入数据
+            Map<int, string> mapStudent;
+            mapStudent[1] =       “student_one”;
+            mapStudent[2] = “student_two”;
+
+在往map里面插入了数据，我们怎么知道当前已经插入了多少数据呢，可以用size函数：
+             Int nSize = mapStudent.size();
+
+
+
+                  数据的查找（包括判定这个关键字是否在map中出现）：
+
+
+这里给出三种数据查找方法
+第一种：用count函数来判定关键字是否出现，但是无法定位数据出现位置
+第二种：用find函数来定位数据出现位置它返回的一个迭代器，
+当数据出现时，它返回数据所在位置的迭代器，如果map中没有要查找的数据，它返回的迭代器等于end函数返回的迭代器
+Int main()
+{
+            Map<int, string> mapStudent;
+            mapStudent.insert(pair<int, string>(1, “student_one”));
+            mapStudent.insert(pair<int, string>(2, “student_two”));
+            mapStudent.insert(pair<int, string>(3, “student_three”));
+            map<int, string>::iterator iter;
+            iter = mapStudent.find(1);
+            if(iter != mapStudent.end())
+            {
+                   Cout<<”Find, the value is ”<<iter->second<<endl;
+            }
+            Else
+            {
+               Cout<<”Do not Find”<<endl;
+            }
+}
+
+第三种：这个方法用来判定数据是否出现
+Lower_bound函数用法，这个函数用来返回要查找关键字的下界(是一个迭代器)
+Upper_bound函数用法，这个函数用来返回要查找关键字的上界(是一个迭代器)
+例如：map中已经插入了1，2，3，4的话，如果lower_bound(2)的话，返回的2，而upper-bound（2）的话，返回的就是3
+Equal_range函数返回一个pair，pair里面第一个变量是Lower_bound返回的迭代器，pair里面第二个迭代器是Upper_bound返回的迭代器，
+如果这两个迭代器相等的话，则说明map中不出现这个关键字，程序说明
+mapPair = mapStudent.equal_range(2);
+if(mapPair.first == mapPair.second)
+            cout<<”Do not Find”<<endl;
+
+
+
+　            数据的遍历：
+
+
+
+第一种：应用前向迭代器
+            map<int, string>::iterator iter;
+            for(iter = mapStudent.begin(); iter != mapStudent.end(); iter++)
+                 Cout<<iter->first<<”        ”<<iter->second<<end;
+第二种：应用反相迭代器
+            map<int, string>::reverse_iterator iter;
+            for(iter = mapStudent.rbegin(); iter != mapStudent.rend(); iter++)
+                  Cout<<iter->first<<”        ”<<iter->second<<end;
+第三种：用数组方式
+            int nSize = mapStudent.size()
+            for(int nIndex = 1; nIndex <= nSize; nIndex++)
+                  Cout<<mapStudent[nIndex]<<end;
+
+
+
+              数据的清空与判空：
+
+
+清空map中的数据可以用clear()函数，判定map中是否有数据可以用empty()函数，它返回true则说明是空map
+7.            数据的删除
+这里要用到erase函数，它有三个重载了的函数
+迭代器删除
+            iter = mapStudent.find(1);
+            mapStudent.erase(iter);
+用关键字删除
+            Int n = mapStudent.erase(1);//如果删除了会返回1，否则返回0
+用迭代器，成片的删除
+            一下代码把整个map清空
+            mapStudent.earse(mapStudent.begin(), mapStudent.end());
+            //成片删除要注意的是，也是STL的特性，删除区间是一个前闭后开的集合
+8.            其他一些函数用法
